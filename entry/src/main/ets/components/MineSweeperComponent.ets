@@ -1,3 +1,4 @@
+import { IMineSweeper } from "../interfaces/interfaces";
 import { ClassicMineSweeper } from "../models/ClassicMineSweeper";
 import { Tile } from "./TileComponent";
 
@@ -9,9 +10,9 @@ function range(n: number): Array<number> {
 @ComponentV2
 export struct MineSweeperComponent {
   // Component code here
-  @Local gameModel: ClassicMineSweeper = new ClassicMineSweeper(9, 9, 10);
-  @Event onTileClick?: (x: number, y: number) => void;
-  @Event onTileMouse?: (x: number, y: number, e: MouseEvent) => void;
+  @Param @Require gameModel: IMineSweeper;
+  @Event onTileClick: (x: number, y: number) => void;
+  @Event onTileMouse: (x: number, y: number, e: MouseEvent) => void;
 
   build() {
     Column() {
@@ -21,22 +22,13 @@ export struct MineSweeperComponent {
             Tile({
               tileData: this.gameModel.tiles[y * this.gameModel.width + x],
             }).onMouse((e: MouseEvent) => {
-            //
+              this.onTileMouse(x, y, e);
             }).onClick(() => {
-              this.gameModel = this.gameModel.reveal(x, y);
-              // console.log(this.gameModel.toString());
+              this.onTileClick(x, y);
             });
           });
         };
       });
     };
-  }
-
-  onDidBuild(): void {
-    console.log("Rebuild: MineSweeper");
-  }
-
-  aboutToAppear(): void {
-    this.gameModel.reveal(3,4);
   }
 }

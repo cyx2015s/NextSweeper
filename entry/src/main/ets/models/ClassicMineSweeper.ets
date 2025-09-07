@@ -1,7 +1,7 @@
-import { Tile } from "../components/TileComponent";
+import { IMineSweeper, ITileData } from "../interfaces/interfaces";
 
 @ObservedV2
-export class TileData {
+export class TileData implements ITileData {
   @Trace mine: boolean = false;
   @Trace revealed: boolean = false;
   @Trace flagged: boolean = false;
@@ -9,7 +9,7 @@ export class TileData {
 }
 
 @ObservedV2
-export class ClassicMineSweeper {
+export class ClassicMineSweeper implements IMineSweeper {
   @Trace width: number;
   @Trace height: number;
   @Trace mines: number;
@@ -66,7 +66,7 @@ export class ClassicMineSweeper {
     return cloned;
   }
 
-  private placeMines(firstClickX: number, firstClickY: number) {
+  private placeMines(firstClickX: number, firstClickY: number): void {
     const excluded = this.neighborRule(firstClickX, firstClickY);
     excluded.push([firstClickX, firstClickY]);
     const candidates: [number, number][] = Array.from({ length: this.width * this.height },
@@ -74,9 +74,9 @@ export class ClassicMineSweeper {
       .filter((cur: [number, number]) => !excluded.some((exc: [number, number]) => exc[0] === cur[0] && exc[1] === cur[1]));
     for (let i = 0; i < this.mines; i++) {
       const idx = Math.floor(Math.random() * candidates.length);
-      const mpos = candidates.splice(idx, 1)[0];
-      const mx = mpos[0];
-      const my = mpos[1];
+      const mine_pos = candidates.splice(idx, 1)[0];
+      const mx = mine_pos[0];
+      const my = mine_pos[1];
       this.tiles[my * this.width + mx].mine = true;
     }
     for (let y = 0; y < this.height; y++) {
