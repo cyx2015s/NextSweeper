@@ -25,10 +25,10 @@ export struct MineSweeperComponent {
               this.onTileMouse(x, y, e);
             }).onClick(() => {
               this.onTileClick(x, y);
-            });
-          });
-        };
-      });
-    };
+            })
+          })
+        }
+      })
+    }
   }
 }

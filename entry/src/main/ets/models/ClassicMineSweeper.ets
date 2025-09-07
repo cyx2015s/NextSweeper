@@ -1,3 +1,4 @@
+import { Tile } from "../components/TileComponent";
 import { IMineSweeper, ITileData } from "../interfaces/Interfaces";
 
 @ObservedV2
@@ -15,9 +16,9 @@ export class ClassicMineSweeper implements IMineSweeper {
   @Trace mines: number;
   @Trace tiles: TileData[];
   @Trace status: 'ready' | 'playing' | 'won' | 'lost';
-
   @Trace revealedCount: number = 0;
   @Trace flaggedCount: number = 0;
+
   constructor(width: number, height: number, mines: number) {
     this.width = width;
     this.height = height;
@@ -27,7 +28,7 @@ export class ClassicMineSweeper implements IMineSweeper {
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-      this.tiles.push({
+        this.tiles.push({
           mine: false,
           revealed: false,
           flagged: false,
@@ -63,6 +64,9 @@ export class ClassicMineSweeper implements IMineSweeper {
         number: tile.number
       } as TileData;
     });
+    // cloned.tiles = this.tiles;
+    cloned.revealedCount = this.revealedCount;
+    cloned.flaggedCount = this.flaggedCount;
     return cloned;
   }
 
@@ -71,7 +75,8 @@ export class ClassicMineSweeper implements IMineSweeper {
     excluded.push([firstClickX, firstClickY]);
     const candidates: [number, number][] = Array.from({ length: this.width * this.height },
       (_: undefined, i: number) => [i % this.width, Math.floor(i / this.width)] as [number, number])
-      .filter((cur: [number, number]) => !excluded.some((exc: [number, number]) => exc[0] === cur[0] && exc[1] === cur[1]));
+      .filter((cur: [number, number]) => !excluded.some((exc: [number, number]) => exc[0] === cur[0] &&
+        exc[1] === cur[1]));
     for (let i = 0; i < this.mines; i++) {
       const idx = Math.floor(Math.random() * candidates.length);
       const mine_pos = candidates.splice(idx, 1)[0];
@@ -96,46 +101,64 @@ export class ClassicMineSweeper implements IMineSweeper {
     }
   }
 
-  reveal(x: number, y: number): ClassicMineSweeper {
+  internalReveal(x: number, y: number): void {
     if (this.status === 'lost' || this.status === 'won') {
-      return this.clone();
+      return;
     }
     if (this.status === 'ready') {
       this.placeMines(x, y);
       this.status = 'playing';
     }
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+      return;
+    }
     const tile = this.tiles[y * this.width + x];
-    if (tile && (tile.revealed || tile.flagged)) {
-      return this.clone();
+    if (tile == undefined) {
+      return;
+    }
+    if (tile.revealed) {
+      return;
     }
 
     tile.revealed = true;
-    tile.flagged = false;
     this.revealedCount++;
+    // this.tiles[y * this.width + x] = {
+    //   mine: tile.mine,
+    //   flagged: tile.flagged,
+    //   revealed: tile.revealed,
+    //   number: tile.number
+    // } as TileData;
+
 
     if (tile.mine) {
       this.status = 'lost';
-      return this.clone();
+      return;
     }
 
-    // Reveal neighboring tiles if the number is 0
     if (tile.number === 0) {
       for (const nbr of this.neighborRule(x, y)) {
         const nx = nbr[0];
         const ny = nbr[1];
-        if (0 <= nx && nx < this.width && 0 <= ny && ny < this.height) {
-          this.reveal(nx, ny);
-        }
+        this.internalReveal(nx, ny);
       }
     }
 
+  }
+
+  reveal(x: number, y: number): ClassicMineSweeper {
+    const tile = this.tiles[y * this.width + x];
+    if (tile == undefined || tile.flagged) {
+      return this.clone();
+    }
+    this.internalReveal(x, y);
     // Check for win condition
     if (this.revealedCount + this.mines === this.width * this.height) {
       this.status = 'won';
     }
-
+    console.log(`${this.revealedCount} tiles revealed.`);
     return this.clone();
   }
+
   flag(x: number, y: number): ClassicMineSweeper {
     if (this.status === 'lost' || this.status === 'won') {
       return this.clone();

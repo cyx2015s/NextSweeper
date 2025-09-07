@@ -54,10 +54,12 @@ export struct Tile {
       Text(makeText(this.tileData))
         .fontWeight(FontWeight.Bold)
         .fontColor(makeTextColor(this.tileData.number))
+        .fontSize("40px")
         .backgroundColor(makeBackgroundColor(this.tileData.revealed))
         .borderWidth("1px")
         .width("64px")
         .height("64px")
+        .textAlign(TextAlign.Center)
     }
   }
 }
