@@ -1,4 +1,4 @@
-import { IMineSweeper, ITileData } from "../interfaces/interfaces";
+import { IMineSweeper, ITileData } from "../interfaces/Interfaces";
 
 @ObservedV2
 export class TileData implements ITileData {

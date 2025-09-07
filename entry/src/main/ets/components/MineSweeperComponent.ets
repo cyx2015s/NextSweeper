@@ -1,4 +1,4 @@
-import { IMineSweeper } from "../interfaces/interfaces";
+import { IMineSweeper } from "../interfaces/Interfaces";
 import { ClassicMineSweeper } from "../models/ClassicMineSweeper";
 import { Tile } from "./TileComponent";
 

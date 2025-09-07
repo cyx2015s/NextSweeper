@@ -1,5 +1,5 @@
 import { MineSweeperComponent } from "../components/MineSweeperComponent";
-import { IMineSweeper } from "../interfaces/interfaces";
+import { IMineSweeper } from "../interfaces/Interfaces";
 import { ClassicMineSweeper } from "../models/ClassicMineSweeper";
 
 @Entry
