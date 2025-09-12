@@ -56,7 +56,7 @@ export struct Tile {
         .fontColor(makeTextColor(this.tileData.number))
         .fontSize("40px")
         .backgroundColor(makeBackgroundColor(this.tileData.revealed))
-        .borderWidth("1px")
+        .borderWidth($r('sys.float.border_small'))
         .width("64px")
         .height("64px")
         .textAlign(TextAlign.Center)

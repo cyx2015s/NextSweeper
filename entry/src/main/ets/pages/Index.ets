@@ -10,13 +10,30 @@ struct Index {
   @Local editingWidth: number = 9;
   @Local editingHeight: number = 9;
   @Local editingMines: number = 10;
+  @Local showSideBar: boolean = false;
 
   build() {
     SideBarContainer(SideBarContainerType.AUTO) {
       Column() {
-        Text("设置").fontSize("48px").alignSelf(ItemAlign.Start)
-        Blank().height("96px")
-        Divider().vertical(false)
+        Row() {
+          Text("设置").fontSize("48px").alignSelf(ItemAlign.Start)
+          Blank().layoutWeight(1)
+          Button() {
+            SymbolGlyph($r('sys.symbol.xmark'))
+          }
+          .backgroundColor(0xEEEEEE)
+          .onClick(() => {
+            this.getUIContext().animateTo({
+              duration: 250,
+            }, () => {
+              this.showSideBar = false;
+            })
+          })
+          .aspectRatio(1)
+
+        }
+
+        Blank().height("32px")
         Text("参数设置").fontSize("36px").alignSelf(ItemAlign.Start).margin("4px")
         Row() {
           Text("宽度").alignSelf(ItemAlign.Start).width("50%")
@@ -114,5 +131,7 @@ struct Index {
       .width('100%')
       .padding("16px")
     }
+    .showSideBar($$this.showSideBar)
+    .showControlButton(!this.showSideBar)
   }
 }
