@@ -15,8 +15,7 @@ export interface IMineSweeper {
   flaggedCount: number;
 
   neighborRule: (x: number, y: number) => [number, number][];
-  clone(): IMineSweeper;
-  reveal(x: number, y: number): IMineSweeper;
-  flag(x: number, y: number): IMineSweeper;
-  chord(x: number, y: number): IMineSweeper;
+  reveal(x: number, y: number): void;
+  flag(x: number, y: number): void;
+  chord(x: number, y: number): void;
 }

@@ -25,7 +25,7 @@ struct Index {
 
         Slider({
           value: $$this.editingWidth,
-          min: 4,
+          min: 8,
           max: 30,
           step: 1,
           style: SliderStyle.InSet
@@ -37,7 +37,7 @@ struct Index {
 
         Slider({
           value: $$this.editingHeight,
-          min: 4,
+          min: 8,
           max: 24,
           step: 1,
           style: SliderStyle.InSet
@@ -50,7 +50,7 @@ struct Index {
         Slider({
           value: $$this.editingMines,
           min: 1,
-          max: this.editingWidth * this.editingHeight - 1,
+          max: this.editingWidth * this.editingHeight - 25,
           step: 1,
           style: SliderStyle.InSet
         })
@@ -64,44 +64,42 @@ struct Index {
       .padding("32px")
 
       RelativeContainer() {
-        MineSweeperComponent({
-          gameModel: this.gameModel,
-          onTileClick: (x: number, y: number): void => {
-            if (this.gameModel.status == 'ready') {
-              this.ttc.start();
-            }
-            this.gameModel =
+        Scroll() {
+          MineSweeperComponent({
+            gameModel: this.gameModel,
+            onTileClick: (x: number, y: number): void => {
+              if (this.gameModel.status == 'ready') {
+                this.ttc.start();
+              }
               this.gameModel.reveal(x, y);
-            if (this.gameModel.status != 'playing') {
-              this.ttc.pause();
-            }
-          },
-          onTileMouse: (x: number, y: number, e: MouseEvent): void => {
-            if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-              this.gameModel =
+              if (this.gameModel.status != 'playing') {
+                this.ttc.pause();
+              }
+            },
+            onTileMouse: (x: number, y: number, e: MouseEvent): void => {
+              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
                 this.gameModel.flag(x, y);
-            }
-            if (e.button == MouseButton.Middle && e.action == MouseAction.Press) {
-              this.gameModel =
+              }
+              if (e.button == MouseButton.Middle && e.action == MouseAction.Press) {
                 this.gameModel.chord(x, y);
+              }
+              if (this.gameModel.status != 'playing') {
+                this.ttc.pause();
+              }
             }
-            if (this.gameModel.status != 'playing') {
-              this.ttc.pause();
-            }
-          }
-        }).alignRules({
+          })
+        }.alignRules({
           center: { anchor: '__container__', align: VerticalAlign.Center },
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
+        .width("100%")
+        .height("100%")
+        .scrollable(ScrollDirection.Horizontal)
 
         Column() {
           Text(`旗子数/雷数: ${this.gameModel.flaggedCount} / ${this.gameModel.mines}`)
           Text(`棋盘大小: ${this.gameModel.width} x ${this.gameModel.height}`)
           TextTimer({ controller: this.ttc })
-          Button('新游戏').onClick(() => {
-            this.gameModel = new ClassicMineSweeper(9, 9, 10);
-            this.ttc.reset();
-          })
         }
         .alignRules({
           bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
@@ -116,15 +114,5 @@ struct Index {
       .width('100%')
       .padding("16px")
     }
-  }
-
-  onDidBuild():
-    void {
-    console
-      .log
-      (
-        "Rebuild: Index"
-      )
-    ;
   }
 }

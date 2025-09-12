@@ -1,4 +1,3 @@
-import { Tile } from "../components/TileComponent";
 import { IMineSweeper, ITileData } from "../interfaces/Interfaces";
 
 @ObservedV2
@@ -7,6 +6,13 @@ export class TileData implements ITileData {
   @Trace revealed: boolean = false;
   @Trace flagged: boolean = false;
   @Trace number: number = 0;
+
+  constructor(mine: boolean, revealed: boolean, flagged: boolean, number: number) {
+    this.mine = mine;
+    this.revealed = revealed;
+    this.flagged = flagged;
+    this.number = number;
+  }
 }
 
 @ObservedV2
@@ -28,17 +34,17 @@ export class ClassicMineSweeper implements IMineSweeper {
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        this.tiles.push({
-          mine: false,
-          revealed: false,
-          flagged: false,
-          number: 0
-        });
+        this.tiles.push(new TileData(
+          false,
+          false,
+          false,
+          0
+        ));
       }
     }
   }
 
-  neighborRule: (x: number, y: number) => [number, number][] = (x: number, y: number) => {
+  neighborRule(x: number, y: number): [number, number][] {
     const neighbors: [number, number][] = [];
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
@@ -52,23 +58,6 @@ export class ClassicMineSweeper implements IMineSweeper {
     }
     return neighbors;
   };
-
-  clone(): ClassicMineSweeper {
-    let cloned = new ClassicMineSweeper(this.width, this.height, this.mines);
-    cloned.status = this.status;
-    cloned.tiles = Array.from(this.tiles, (tile: TileData) => {
-      return {
-        mine: tile.mine,
-        revealed: tile.revealed,
-        flagged: tile.flagged,
-        number: tile.number
-      } as TileData;
-    });
-    // cloned.tiles = this.tiles;
-    cloned.revealedCount = this.revealedCount;
-    cloned.flaggedCount = this.flaggedCount;
-    return cloned;
-  }
 
   private placeMines(firstClickX: number, firstClickY: number): void {
     const excluded = this.neighborRule(firstClickX, firstClickY);
@@ -122,13 +111,6 @@ export class ClassicMineSweeper implements IMineSweeper {
 
     tile.revealed = true;
     this.revealedCount++;
-    // this.tiles[y * this.width + x] = {
-    //   mine: tile.mine,
-    //   flagged: tile.flagged,
-    //   revealed: tile.revealed,
-    //   number: tile.number
-    // } as TileData;
-
 
     if (tile.mine) {
       this.status = 'lost';
@@ -145,10 +127,10 @@ export class ClassicMineSweeper implements IMineSweeper {
 
   }
 
-  reveal(x: number, y: number): ClassicMineSweeper {
+  reveal(x: number, y: number): void {
     const tile = this.tiles[y * this.width + x];
     if (tile == undefined || tile.flagged) {
-      return this.clone();
+      return;
     }
     this.internalReveal(x, y);
     // Check for win condition
@@ -156,31 +138,29 @@ export class ClassicMineSweeper implements IMineSweeper {
       this.status = 'won';
     }
     console.log(`${this.revealedCount} tiles revealed.`);
-    return this.clone();
+    return;
   }
 
-  flag(x: number, y: number): ClassicMineSweeper {
+  flag(x: number, y: number): void {
     if (this.status === 'lost' || this.status === 'won') {
-      return this.clone();
+      return;
     }
     const tile = this.tiles[y * this.width + x];
     if (tile.revealed) {
-      return this.clone();
+      return;
     }
 
     tile.flagged = !tile.flagged;
     this.flaggedCount += tile.flagged ? 1 : -1;
-
-    return this.clone();
   }
 
-  chord(x: number, y: number): ClassicMineSweeper {
+  chord(x: number, y: number): void {
     if (this.status !== 'playing') {
-      return this.clone();
+      return;
     }
     const tile = this.tiles[y * this.width + x];
     if (!tile.revealed || tile.number === 0) {
-      return this.clone();
+      return;
     }
 
     const flaggedNeighbors = this.neighborRule(x, y).filter((nbr: [number, number]) => {
@@ -198,8 +178,6 @@ export class ClassicMineSweeper implements IMineSweeper {
         }
       }
     }
-
-    return this.clone();
   }
 
   toString(): string {
