@@ -20,7 +20,9 @@ struct Index {
           Blank().layoutWeight(1)
           Button() {
             SymbolGlyph($r('sys.symbol.xmark'))
+              .fontSize("32vp")
           }
+          .borderRadius("4px")
           .backgroundColor(0xEEEEEE)
           .onClick(() => {
             this.getUIContext().animateTo({
@@ -30,7 +32,6 @@ struct Index {
             })
           })
           .aspectRatio(1)
-
         }
 
         Blank().height("32px")
@@ -71,10 +72,28 @@ struct Index {
           step: 1,
           style: SliderStyle.InSet
         })
-        Button("确定").onClick(() => {
+        Button("新游戏").onClick(() => {
           this.gameModel = new ClassicMineSweeper(this.editingWidth, this.editingHeight, this.editingMines);
           this.ttc.reset();
         }).margin({ top: 16 })
+        Divider()
+        Row() {
+          Button("简单").onClick(() => {
+            this.editingWidth = 9;
+            this.editingHeight = 9;
+            this.editingMines = 10;
+          })
+          Button("中等").onClick(() => {
+            this.editingWidth = 16;
+            this.editingHeight = 16;
+            this.editingMines = 40;
+          })
+          Button("困难").onClick(() => {
+            this.editingWidth = 30;
+            this.editingHeight = 16;
+            this.editingMines = 99;
+          })
+        }
       }.width("100%")
       .height("100%")
       .backgroundColor(0xEEEEEE)

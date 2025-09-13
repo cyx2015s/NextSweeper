@@ -114,6 +114,11 @@ export class ClassicMineSweeper implements IMineSweeper {
 
     if (tile.mine) {
       this.status = 'lost';
+      for (const t of this.tiles) {
+        if (t.mine) {
+          t.revealed = true;
+        }
+      }
       return;
     }
 
@@ -137,7 +142,7 @@ export class ClassicMineSweeper implements IMineSweeper {
     if (this.revealedCount + this.mines === this.width * this.height) {
       this.status = 'won';
     }
-    console.log(`${this.revealedCount} tiles revealed.`);
+    // console.log(`${this.revealedCount} tiles revealed.`);
     return;
   }
 
