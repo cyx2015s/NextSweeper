@@ -131,6 +131,12 @@ struct Index {
         .width("100%")
         .height("100%")
         .scrollable(ScrollDirection.Horizontal)
+        // .rotate({
+        //   x: 1,
+        //   y: 0,
+        //   z: 0,
+        //   angle: 30,
+        // })
 
         Column() {
           Text(`旗子数/雷数: ${this.gameModel.flaggedCount} / ${this.gameModel.mines}`)
